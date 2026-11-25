@@ -56,7 +56,7 @@ resource "aws_cloudwatch_dashboard" "this" {
           region  = var.aws_region
           stat    = "Sum"
           period  = 60
-          metrics = [for k in keys(local.services) : ["AWS/Lambda", "Invocations", "FunctionName", aws_lambda_function.svc[k].function_name]]
+          metrics = [for k in local.services : ["AWS/Lambda", "Invocations", "FunctionName", aws_lambda_function.svc[k].function_name]]
         }
       },
       {
@@ -66,7 +66,7 @@ resource "aws_cloudwatch_dashboard" "this" {
           region  = var.aws_region
           stat    = "Sum"
           period  = 60
-          metrics = [for k in keys(local.services) : ["AWS/Lambda", "Errors", "FunctionName", aws_lambda_function.svc[k].function_name]]
+          metrics = [for k in local.services : ["AWS/Lambda", "Errors", "FunctionName", aws_lambda_function.svc[k].function_name]]
         }
       },
       {

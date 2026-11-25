@@ -2,13 +2,6 @@ resource "aws_cloudwatch_event_bus" "this" {
   name = "${local.name_prefix}-bus"
 }
 
-# Allows replaying business events after a bug fix
-resource "aws_cloudwatch_event_archive" "this" {
-  name             = "${local.name_prefix}-archive"
-  event_source_arn = aws_cloudwatch_event_bus.this.arn
-  retention_days   = 7
-}
-
 locals {
   # Business-event routing table: event -> destination queue
   event_routes = {

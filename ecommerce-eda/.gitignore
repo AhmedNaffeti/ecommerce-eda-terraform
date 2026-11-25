@@ -1,4 +1,7 @@
-build/
-.terraform/
 *.tfstate*
+.terraform/
+build/
 terraform.tfvars
+*.zip
+__pycache__/
+.env
