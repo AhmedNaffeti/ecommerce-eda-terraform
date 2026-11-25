@@ -20,7 +20,7 @@ def handler(event, context):
         try:
             name, price = str(body["name"]).strip(), body["price"]
             assert name and price > 0
-        except Exception:
+        except (KeyError, TypeError, AssertionError):
             return c.response(400, {"message": "name and a positive price are required"})
         item = {
             "id": c.new_id(),

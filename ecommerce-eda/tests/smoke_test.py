@@ -5,8 +5,8 @@ Needs: pip install boto3 ; Learner Lab credentials active.
 import json
 import subprocess
 import time
-import urllib.request
 import urllib.error
+import urllib.request
 
 import boto3
 

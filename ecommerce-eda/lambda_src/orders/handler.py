@@ -1,8 +1,7 @@
 from decimal import Decimal
 
-from boto3.dynamodb.conditions import Key
-
 import common as c
+from boto3.dynamodb.conditions import Key
 
 SOURCE = "ecommerce.orders"
 
