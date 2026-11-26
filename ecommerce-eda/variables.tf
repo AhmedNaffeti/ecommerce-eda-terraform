@@ -1,6 +1,7 @@
 variable "aws_region" {
-  type    = string
-  default = "us-east-1"
+  description = "Learner Lab only allows us-east-1 and us-west-2."
+  type        = string
+  default     = "us-east-1"
 }
 
 variable "project" {
@@ -38,4 +39,16 @@ variable "payment_failure_rate" {
   description = "Probability (0-1) that the simulated payment provider declines a payment."
   type        = number
   default     = 0.1
+}
+
+variable "enable_xray" {
+  description = "X-Ray tracing (may be blocked in Learner Lab). Try true once the base deploy works."
+  type        = bool
+  default     = false
+}
+
+variable "enable_frontend" {
+  description = "S3 + CloudFront storefront (CloudFront OAC may be blocked in Learner Lab)."
+  type        = bool
+  default     = false
 }

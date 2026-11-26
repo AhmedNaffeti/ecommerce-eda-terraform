@@ -3,7 +3,7 @@ output "api_url" {
 }
 
 output "website_url" {
-  value = "https://${aws_cloudfront_distribution.web.domain_name}"
+  value = var.enable_frontend ? "https://${aws_cloudfront_distribution.web[0].domain_name}" : "frontend disabled"
 }
 
 output "cognito_user_pool_id" {

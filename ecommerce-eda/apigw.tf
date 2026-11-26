@@ -157,7 +157,7 @@ resource "aws_api_gateway_stage" "this" {
   rest_api_id          = aws_api_gateway_rest_api.this.id
   deployment_id        = aws_api_gateway_deployment.this.id
   stage_name           = var.environment
-  xray_tracing_enabled = true
+  xray_tracing_enabled = var.enable_xray
 }
 
 resource "aws_api_gateway_method_settings" "all" {

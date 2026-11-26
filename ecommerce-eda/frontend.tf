@@ -1,10 +1,13 @@
+# Optional storefront. Set enable_frontend = true only if CloudFront is allowed in your lab.
 resource "aws_s3_bucket" "web" {
+  count         = var.enable_frontend ? 1 : 0
   bucket        = "${local.name_prefix}-web-${data.aws_caller_identity.current.account_id}"
   force_destroy = true
 }
 
 resource "aws_s3_bucket_public_access_block" "web" {
-  bucket                  = aws_s3_bucket.web.id
+  count                   = var.enable_frontend ? 1 : 0
+  bucket                  = aws_s3_bucket.web[0].id
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
@@ -12,6 +15,7 @@ resource "aws_s3_bucket_public_access_block" "web" {
 }
 
 resource "aws_cloudfront_origin_access_control" "web" {
+  count                             = var.enable_frontend ? 1 : 0
   name                              = "${local.name_prefix}-oac"
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"
@@ -23,14 +27,15 @@ locals {
 }
 
 resource "aws_cloudfront_distribution" "web" {
+  count               = var.enable_frontend ? 1 : 0
   enabled             = true
   default_root_object = "index.html"
   price_class         = "PriceClass_100"
 
   origin {
-    domain_name              = aws_s3_bucket.web.bucket_regional_domain_name
+    domain_name              = aws_s3_bucket.web[0].bucket_regional_domain_name
     origin_id                = "s3-web"
-    origin_access_control_id = aws_cloudfront_origin_access_control.web.id
+    origin_access_control_id = aws_cloudfront_origin_access_control.web[0].id
   }
 
   default_cache_behavior {
@@ -42,7 +47,6 @@ resource "aws_cloudfront_distribution" "web" {
     compress               = true
   }
 
-  # SPA routing
   custom_error_response {
     error_code         = 403
     response_code      = 200
@@ -57,9 +61,11 @@ resource "aws_cloudfront_distribution" "web" {
 }
 
 data "aws_iam_policy_document" "web" {
+  count = var.enable_frontend ? 1 : 0
+
   statement {
     actions   = ["s3:GetObject"]
-    resources = ["${aws_s3_bucket.web.arn}/*"]
+    resources = ["${aws_s3_bucket.web[0].arn}/*"]
 
     principals {
       type        = "Service"
@@ -69,28 +75,30 @@ data "aws_iam_policy_document" "web" {
     condition {
       test     = "StringEquals"
       variable = "AWS:SourceArn"
-      values   = [aws_cloudfront_distribution.web.arn]
+      values   = [aws_cloudfront_distribution.web[0].arn]
     }
   }
 }
 
 resource "aws_s3_bucket_policy" "web" {
-  bucket     = aws_s3_bucket.web.id
-  policy     = data.aws_iam_policy_document.web.json
+  count      = var.enable_frontend ? 1 : 0
+  bucket     = aws_s3_bucket.web[0].id
+  policy     = data.aws_iam_policy_document.web[0].json
   depends_on = [aws_s3_bucket_public_access_block.web]
 }
 
 resource "aws_s3_object" "index" {
-  bucket       = aws_s3_bucket.web.id
+  count        = var.enable_frontend ? 1 : 0
+  bucket       = aws_s3_bucket.web[0].id
   key          = "index.html"
   source       = "${path.module}/web/index.html"
   etag         = filemd5("${path.module}/web/index.html")
   content_type = "text/html"
 }
 
-# Runtime config consumed by the web app (API URL, Cognito IDs)
 resource "aws_s3_object" "config" {
-  bucket       = aws_s3_bucket.web.id
+  count        = var.enable_frontend ? 1 : 0
+  bucket       = aws_s3_bucket.web[0].id
   key          = "config.json"
   content_type = "application/json"
   content = jsonencode({

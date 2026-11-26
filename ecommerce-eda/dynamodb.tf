@@ -8,7 +8,6 @@ resource "aws_dynamodb_table" "products" {
     type = "S"
   }
 
-  point_in_time_recovery { enabled = true }
 }
 
 resource "aws_dynamodb_table" "orders" {
@@ -36,7 +35,6 @@ resource "aws_dynamodb_table" "orders" {
     projection_type = "ALL"
   }
 
-  point_in_time_recovery { enabled = true }
 }
 
 resource "aws_dynamodb_table" "inventory" {
@@ -49,7 +47,6 @@ resource "aws_dynamodb_table" "inventory" {
     type = "S"
   }
 
-  point_in_time_recovery { enabled = true }
 }
 
 resource "aws_dynamodb_table" "payments" {
@@ -62,5 +59,4 @@ resource "aws_dynamodb_table" "payments" {
     type = "S"
   }
 
-  point_in_time_recovery { enabled = true }
 }

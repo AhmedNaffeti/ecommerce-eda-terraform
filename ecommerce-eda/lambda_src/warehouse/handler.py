@@ -1,6 +1,5 @@
-from botocore.exceptions import ClientError
-
 import common as c
+from botocore.exceptions import ClientError
 
 SOURCE = "ecommerce.warehouse"
 

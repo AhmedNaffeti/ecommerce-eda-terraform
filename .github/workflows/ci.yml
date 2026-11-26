@@ -1,0 +1,40 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+        branches: [main, master, "feature/**"]
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: ecommerce-eda
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.5
+      - run: terraform fmt -check -recursive
+      - run: terraform init -backend=false
+      - run: terraform validate
+      - name: Analyse de securite (Checkov)
+        uses: bridgecrewio/checkov-action@v12
+        with:
+          directory: ecommerce-eda
+          framework: terraform
+          soft_fail: true
+
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install ruff
+      - run: ruff check lambda_src tests
+      - run: python -m compileall -q lambda_src
